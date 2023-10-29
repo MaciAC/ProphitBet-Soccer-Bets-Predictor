@@ -4,12 +4,15 @@ import pandas as pd
 
 class StatisticsEngine:
     Columns = [
+        'HCR',
         'HW', 'HL', 'HD','HWC', 'HLC', 'HDC', #HOME WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
         'HGF', 'HGA', 'HGDW', 'HGDL', 'HW%', 'HD%',  #HOME GOALS
-        'HGFC', 'HGAC', #HOME GOALS CUMULATED                           
+        'HGFC', 'HGAC', #HOME GOALS CUMULATED
+        'HGDWC', 'HGDLC',#HOME GOALS DIFFERENCE CUMULATED
         'AW', 'AL', 'AD','AWC', 'ALC', 'ADC',  #AWAY WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
         'AGF', 'AGA', 'AGDW', 'AGDL', 'AW%', 'AD%', #AWAY GOALS
         'AGFC', 'AGAC', #AWAY GOALS CUMULATED
+        'AGDWC', 'AGDLC',#AWAY GOALS DIFFERENCE CUMULATED
         'HYC', 'HYCC', 'AYC', 'AYCC', #YELLOW CARDS
         'HRC','HRCC','ARC','ARCC', #RED CARDS
     ]
@@ -30,6 +33,7 @@ class StatisticsEngine:
         self._goal_diff_margin = goal_diff_margin
 
         self._statistics_mapper = {
+            'HCR': self._compute_current_round,
             'HW': self._compute_last_n_home_wins,
             'HL': self._compute_last_n_home_losses,
             'HD': self._compute_last_n_home_draws,
@@ -66,6 +70,10 @@ class StatisticsEngine:
             'HGAC': self._compute_cumulated_home_goals_against,
             'AGFC': self._compute_cumulated_away_goals_forward,
             'AGAC': self._compute_cumulated_away_goals_against,
+            'HGDWC': self._compute_cumulated_home_wins_goals_diff,
+            'HGDLC': self._compute_cumulated_home_losses_goals_diff,
+            'AGDWC': self._compute_cumulated_away_wins_goals_diff,
+            'AGDLC': self._compute_cumulated_away_losses_goals_diff,
         }
 
     def compute_statistics(
@@ -202,12 +210,33 @@ class StatisticsEngine:
         return self._compute_last_results_with_goals_diff(
             team_index=2, target_higher_goals_index=3, target_lower_goals_index=4
         )
+    
+    def _compute_cumulated_home_wins_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=1, target_higher_goals_index=3, target_lower_goals_index=4, all_matches= True
+        )
+
+    def _compute_cumulated_home_losses_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=1, target_higher_goals_index=4, target_lower_goals_index=3, all_matches= True
+        )
+
+    def _compute_cumulated_away_wins_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=2, target_higher_goals_index=4, target_lower_goals_index=3, all_matches= True
+        )
+
+    def _compute_cumulated_away_losses_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=2, target_higher_goals_index=3, target_lower_goals_index=4, all_matches= True
+        )
 
     def _compute_last_results_with_goals_diff(
             self,
             team_index: int,
             target_higher_goals_index: int,
-            target_lower_goals_index: int
+            target_lower_goals_index: int, 
+            all_matches: bool = False
     ):
         last_results_with_goals_diff = []
 
@@ -227,11 +256,9 @@ class StatisticsEngine:
 
                         if target_higher_goals - target_lower_goals >= self._goal_diff_margin:
                             target_results_with_goals_diff += 1
-                    if last_n == self._last_n_matches:
+                    if last_n == self._last_n_matches and not all_matches:
                         break
-                last_results_with_goals_diff.append(
-                    target_results_with_goals_diff if last_n == self._last_n_matches else np.nan
-                )
+                last_results_with_goals_diff.append(target_results_with_goals_diff)
         return pd.Series(last_results_with_goals_diff)
 
     def _compute_total_home_win_rate(self) -> pd.Series:
@@ -268,6 +295,19 @@ class StatisticsEngine:
                 total_results = target_results + non_target_results
                 last_result_rates.append(np.nan if total_results == 0 else round(target_results*100/total_results))
         return pd.Series(last_result_rates)
+
+    def _compute_current_round(self)->pd.Series:
+        
+        home_wins = self._compute_cumulated_home_wins()
+        home_losses = self._compute_cumulated_home_losses()
+        home_draws = self._compute_cumulated_home_draws()
+        away_wins = self._compute_cumulated_away_wins()
+        away_losses = self._compute_cumulated_away_losses()
+        away_draws = self._compute_cumulated_away_draws()
+        total_rounds = home_wins + home_losses + home_draws + away_wins + away_losses +away_draws
+
+        return pd.Series(total_rounds)
+
 
     def _compute_last_n_home_yellow_cards(self) -> pd.Series:
         return self._compute_last_cards(team_index=1, card_index=6)
