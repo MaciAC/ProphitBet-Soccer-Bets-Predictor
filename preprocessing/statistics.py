@@ -6,8 +6,10 @@ class StatisticsEngine:
     Columns = [
         'HW', 'HL', 'HD','HWC', 'HLC', 'HDC', #HOME WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
         'HGF', 'HGA', 'HGDW', 'HGDL', 'HW%', 'HD%',  #HOME GOALS
+        'HGFC', 'HGAC', #HOME GOALS CUMULATED                           
         'AW', 'AL', 'AD','AWC', 'ALC', 'ADC',  #AWAY WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
         'AGF', 'AGA', 'AGDW', 'AGDL', 'AW%', 'AD%', #AWAY GOALS
+        'AGFC', 'AGAC', #AWAY GOALS CUMULATED
         'HYC', 'HYCC', 'AYC', 'AYCC', #YELLOW CARDS
         'HRC','HRCC','ARC','ARCC', #RED CARDS
     ]
@@ -60,6 +62,10 @@ class StatisticsEngine:
             'HRCC': self._compute_cumulated_home_red_cards,
             'ARC': self._compute_last_n_away_red_cards,
             'ARCC': self._compute_cumulated_away_red_cards,
+            'HGFC': self._compute_cumulated_home_goals_forward,
+            'HGAC': self._compute_cumulated_home_goals_against,
+            'AGFC': self._compute_cumulated_away_goals_forward,
+            'AGAC': self._compute_cumulated_away_goals_against,
         }
 
     def compute_statistics(
@@ -144,8 +150,20 @@ class StatisticsEngine:
 
     def _compute_last_n_away_goals_against(self) -> pd.Series:
         return self._compute_last_goals(team_index=2, goals_index=3)
+    
+    def _compute_cumulated_home_goals_forward(self) -> pd.Series:
+        return self._compute_last_goals(team_index=1, goals_index=3, all_matches= True)
 
-    def _compute_last_goals(self, team_index: int, goals_index: int):
+    def _compute_cumulated_home_goals_against(self) -> pd.Series:
+        return self._compute_last_goals(team_index=1, goals_index=4, all_matches= True)
+
+    def _compute_cumulated_away_goals_forward(self) -> pd.Series:
+        return self._compute_last_goals(team_index=2, goals_index=4, all_matches= True)
+
+    def _compute_cumulated_away_goals_against(self) -> pd.Series:
+        return self._compute_last_goals(team_index=2, goals_index=3, all_matches= True)
+
+    def _compute_last_goals(self, team_index: int, goals_index: int, all_matches: bool = False):
         last_goals = []
 
         for season in range(self._max_season, self._min_season - 1, -1):
@@ -160,11 +178,11 @@ class StatisticsEngine:
                     if previous_match[team_index] == team_name:
                         goals += previous_match[goals_index]
                         last_n += 1
-                    if last_n == self._last_n_matches:
+                    if last_n == self._last_n_matches and not all_matches:
                         break
-                last_goals.append(goals if last_n == self._last_n_matches else np.nan)
+                last_goals.append(goals)
         return pd.Series(last_goals)
-
+    
     def _compute_last_n_home_wins_goals_diff(self) -> pd.Series:
         return self._compute_last_results_with_goals_diff(
             team_index=1, target_higher_goals_index=3, target_lower_goals_index=4
