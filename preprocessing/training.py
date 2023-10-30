@@ -55,10 +55,12 @@ def construct_inputs_from_fixtures(
 def split_train_targets(
         inputs: np.ndarray,
         targets: np.ndarray,
-        num_eval_samples: int
+        ratio_eval_samples: float,
 ) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
-    x_train = inputs[num_eval_samples:]
-    y_train = targets[num_eval_samples:]
-    x_test = inputs[: num_eval_samples]
-    y_test = targets[: num_eval_samples]
+    num_eval_samples = int(len(inputs) * ratio_eval_samples)
+    indices = np.random.permutation(len(inputs))
+    x_train = inputs[indices[num_eval_samples:]]
+    y_train = targets[indices[num_eval_samples:]]
+    x_test = inputs[indices[:num_eval_samples]]
+    y_test = targets[indices[:num_eval_samples]]
     return x_train, y_train, x_test, y_test
