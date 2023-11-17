@@ -19,8 +19,9 @@ class MainLeagueAPI(FootballDataAPI):
         return league_matches_dfs[0] if len(league_matches_dfs) == 1 else pd.concat(league_matches_dfs)
 
     def _process_features(self, matches_df: pd.DataFrame) -> pd.DataFrame:
+        print(matches_df.columns)
         matches_df = matches_df[[
-            'Date', 'Season', 'HomeTeam', 'AwayTeam', 'B365H', 'B365D', 'B365A', 'FTHG', 'FTAG', 'FTR', 'HY', 'AY', 'HR', 'AR',''
+            'Date', 'Season', 'HomeTeam', 'AwayTeam', 'B365H', 'B365D', 'B365A', 'FTHG', 'FTAG', 'FTR', 'HY', 'AY', 'HR', 'AR'
         ]]
         matches_df = matches_df.rename(columns={
             'HomeTeam': 'Home Team',
