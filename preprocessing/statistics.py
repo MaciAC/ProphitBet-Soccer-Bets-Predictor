@@ -4,38 +4,17 @@ import pandas as pd
 
 class StatisticsEngine:
     Columns = [
-        "HW",
-        "HL",
-        "HD",
-        "HWC",
-        "HLC",
-        "HDC",  # HOME WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
-        "HGF",
-        "HGA",
-        "HGDW",
-        "HGDL",
-        "HW%",
-        "HD%",  # HOME GOALS
-        "AW",
-        "AL",
-        "AD",
-        "AWC",
-        "ALC",
-        "ADC",  # AWAY WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
-        "AGF",
-        "AGA",
-        "AGDW",
-        "AGDL",
-        "AW%",
-        "AD%",  # AWAY GOALS
-        "HYC",
-        "HYCC",
-        "AYC",
-        "AYCC",  # YELLOW CARDS
-        "HRC",
-        "HRCC",
-        "ARC",
-        "ARCC",  # RED CARDS
+        'HCR',
+        'HW', 'HL', 'HD','HWC', 'HLC', 'HDC', #HOME WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
+        'HGF', 'HGA', 'HGDW', 'HGDL', 'HW%', 'HD%',  #HOME GOALS
+        'HGFC', 'HGAC', #HOME GOALS CUMULATED
+        'HGDWC', 'HGDLC',#HOME GOALS DIFFERENCE CUMULATED
+        'AW', 'AL', 'AD','AWC', 'ALC', 'ADC',  #AWAY WINS, LOSES AND DRAWS FOR THE LAST N AND CUMULATED
+        'AGF', 'AGA', 'AGDW', 'AGDL', 'AW%', 'AD%', #AWAY GOALS
+        'AGFC', 'AGAC', #AWAY GOALS CUMULATED
+        'AGDWC', 'AGDLC',#AWAY GOALS DIFFERENCE CUMULATED
+        'HYC', 'HYCC', 'AYC', 'AYCC', #YELLOW CARDS
+        'HRC','HRCC','ARC','ARCC', #RED CARDS
     ]
 
     def __init__(

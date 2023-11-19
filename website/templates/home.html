@@ -4,9 +4,9 @@
     {% if session is defined %}
             {% if matches is defined %}
                 <h1>{{ session.league_name}}</h1>
-                <table class="table table-dark">
-                    {{ matches.to_html(classes='table table-bordered', escape=False) | safe }}
-                </table>
+                <div style="overflow-y: scroll;">
+                        {{ matches.to_html(classes='table table-striped table-bordered') | safe }}
+                </div>
             {% else %}
                 <h1>No data to display.</h1>
             {% endif %}
