@@ -63,6 +63,7 @@ class StatisticsEngine:
         self._goal_diff_margin = goal_diff_margin
 
         self._statistics_mapper = {
+<<<<<<< HEAD
             "HW": self._compute_last_n_home_wins,
             "HL": self._compute_last_n_home_losses,
             "HD": self._compute_last_n_home_draws,
@@ -95,6 +96,49 @@ class StatisticsEngine:
             "HRCC": self._compute_cumulated_home_red_cards,
             "ARC": self._compute_last_n_away_red_cards,
             "ARCC": self._compute_cumulated_away_red_cards,
+=======
+            'HCR': self._compute_current_round,
+            'HW': self._compute_last_n_home_wins,
+            'HL': self._compute_last_n_home_losses,
+            'HD': self._compute_last_n_home_draws,
+            'HWC': self._compute_cumulated_home_wins,
+            'HLC': self._compute_cumulated_home_losses,
+            'HDC': self._compute_cumulated_home_draws,
+            'HGF': self._compute_last_n_home_goals_forward,
+            'HGA': self._compute_last_n_home_goals_against,
+            'HGDW': self._compute_last_n_home_wins_goals_diff,
+            'HGDL': self._compute_last_n_home_losses_goals_diff,
+            'HW%': self._compute_total_home_win_rate,
+            'HD%': self._compute_total_home_draw_rate,
+            'AW': self._compute_last_n_away_wins,
+            'AL': self._compute_last_n_away_losses,
+            'AD': self._compute_last_n_away_draws,
+            'AWC': self._compute_cumulated_away_wins,
+            'ALC': self._compute_cumulated_away_losses,
+            'ADC': self._compute_cumulated_away_draws,
+            'AGF': self._compute_last_n_away_goals_forward,
+            'AGA': self._compute_last_n_away_goals_against,
+            'AGDW': self._compute_last_n_away_wins_goals_diff,
+            'AGDL': self._compute_last_n_away_losses_goals_diff,
+            'AW%': self._compute_total_home_win_rate,
+            'AD%': self._compute_total_home_draw_rate,
+            'HYC': self._compute_last_n_home_yellow_cards,
+            'HYCC': self._compute_cumulated_home_yellow_cards,
+            'AYC': self._compute_last_n_away_yellow_cards,
+            'AYCC': self._compute_cumulated_away_yellow_cards,
+            'HRC': self._compute_last_n_home_red_cards,
+            'HRCC': self._compute_cumulated_home_red_cards,
+            'ARC': self._compute_last_n_away_red_cards,
+            'ARCC': self._compute_cumulated_away_red_cards,
+            'HGFC': self._compute_cumulated_home_goals_forward,
+            'HGAC': self._compute_cumulated_home_goals_against,
+            'AGFC': self._compute_cumulated_away_goals_forward,
+            'AGAC': self._compute_cumulated_away_goals_against,
+            'HGDWC': self._compute_cumulated_home_wins_goals_diff,
+            'HGDLC': self._compute_cumulated_home_losses_goals_diff,
+            'AGDWC': self._compute_cumulated_away_wins_goals_diff,
+            'AGDLC': self._compute_cumulated_away_losses_goals_diff,
+>>>>>>> main
         }
 
     def compute_statistics(self, statistic_columns: list) -> pd.DataFrame:
@@ -192,8 +236,20 @@ class StatisticsEngine:
 
     def _compute_last_n_away_goals_against(self) -> pd.Series:
         return self._compute_last_goals(team_index=2, goals_index=3)
+    
+    def _compute_cumulated_home_goals_forward(self) -> pd.Series:
+        return self._compute_last_goals(team_index=1, goals_index=3, all_matches= True)
 
-    def _compute_last_goals(self, team_index: int, goals_index: int):
+    def _compute_cumulated_home_goals_against(self) -> pd.Series:
+        return self._compute_last_goals(team_index=1, goals_index=4, all_matches= True)
+
+    def _compute_cumulated_away_goals_forward(self) -> pd.Series:
+        return self._compute_last_goals(team_index=2, goals_index=4, all_matches= True)
+
+    def _compute_cumulated_away_goals_against(self) -> pd.Series:
+        return self._compute_last_goals(team_index=2, goals_index=3, all_matches= True)
+
+    def _compute_last_goals(self, team_index: int, goals_index: int, all_matches: bool = False):
         last_goals = []
 
         for season in range(self._max_season, self._min_season - 1, -1):
@@ -208,11 +264,11 @@ class StatisticsEngine:
                     if previous_match[team_index] == team_name:
                         goals += previous_match[goals_index]
                         last_n += 1
-                    if last_n == self._last_n_matches:
+                    if last_n == self._last_n_matches and not all_matches:
                         break
-                last_goals.append(goals if last_n == self._last_n_matches else np.nan)
+                last_goals.append(goals)
         return pd.Series(last_goals)
-
+    
     def _compute_last_n_home_wins_goals_diff(self) -> pd.Series:
         return self._compute_last_results_with_goals_diff(
             team_index=1, target_higher_goals_index=3, target_lower_goals_index=4
@@ -232,12 +288,40 @@ class StatisticsEngine:
         return self._compute_last_results_with_goals_diff(
             team_index=2, target_higher_goals_index=3, target_lower_goals_index=4
         )
+    
+    def _compute_cumulated_home_wins_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=1, target_higher_goals_index=3, target_lower_goals_index=4, all_matches= True
+        )
+
+    def _compute_cumulated_home_losses_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=1, target_higher_goals_index=4, target_lower_goals_index=3, all_matches= True
+        )
+
+    def _compute_cumulated_away_wins_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=2, target_higher_goals_index=4, target_lower_goals_index=3, all_matches= True
+        )
+
+    def _compute_cumulated_away_losses_goals_diff(self) -> pd.Series:
+        return self._compute_last_results_with_goals_diff(
+            team_index=2, target_higher_goals_index=3, target_lower_goals_index=4, all_matches= True
+        )
 
     def _compute_last_results_with_goals_diff(
+<<<<<<< HEAD
         self,
         team_index: int,
         target_higher_goals_index: int,
         target_lower_goals_index: int,
+=======
+            self,
+            team_index: int,
+            target_higher_goals_index: int,
+            target_lower_goals_index: int, 
+            all_matches: bool = False
+>>>>>>> main
     ):
         last_results_with_goals_diff = []
 
@@ -260,13 +344,17 @@ class StatisticsEngine:
                             >= self._goal_diff_margin
                         ):
                             target_results_with_goals_diff += 1
-                    if last_n == self._last_n_matches:
+                    if last_n == self._last_n_matches and not all_matches:
                         break
+<<<<<<< HEAD
                 last_results_with_goals_diff.append(
                     target_results_with_goals_diff
                     if last_n == self._last_n_matches
                     else np.nan
                 )
+=======
+                last_results_with_goals_diff.append(target_results_with_goals_diff)
+>>>>>>> main
         return pd.Series(last_results_with_goals_diff)
 
     def _compute_total_home_win_rate(self) -> pd.Series:
@@ -307,6 +395,19 @@ class StatisticsEngine:
                     else round(target_results * 100 / total_results)
                 )
         return pd.Series(last_result_rates)
+
+    def _compute_current_round(self)->pd.Series:
+        
+        home_wins = self._compute_cumulated_home_wins()
+        home_losses = self._compute_cumulated_home_losses()
+        home_draws = self._compute_cumulated_home_draws()
+        away_wins = self._compute_cumulated_away_wins()
+        away_losses = self._compute_cumulated_away_losses()
+        away_draws = self._compute_cumulated_away_draws()
+        total_rounds = home_wins + home_losses + home_draws + away_wins + away_losses +away_draws
+
+        return pd.Series(total_rounds)
+
 
     def _compute_last_n_home_yellow_cards(self) -> pd.Series:
         return self._compute_last_cards(team_index=1, card_index=6)

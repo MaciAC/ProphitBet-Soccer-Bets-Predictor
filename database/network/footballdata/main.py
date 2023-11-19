@@ -1,5 +1,7 @@
-import pandas as pd
 from datetime import date
+
+import pandas as pd
+
 from database.network.footballdata.api import FootballDataAPI
 from website.models import AvailableLeague
 
