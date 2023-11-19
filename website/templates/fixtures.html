@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <h1>Fixture prediction</h1>
+    <h3>Fixtures downloaded from <a href={{fixture_url}}>footystats</a></h3>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {% for field in form %}
+        <div>
+            {{ field.label }}
+            {{ field }}
+        </div>
+        {% endfor %}
+        <div>
+            <button type="submit" name="button" value="Import">Import fixture</button>
+        </div>
+        {% if matches is defined %}
+            <div>
+                <button type="submit" name="button" value="Predict">Predict fixture</button>
+            </div>
+        {% endif %}
+
+    </form>
+    {% if matches is defined %}
+        <table class="table table-dark">
+            {{ matches.to_html(classes='table table-bordered', escape=False) | safe }}
+        </table>
+    {% endif %}
+
+</body>
+{% endblock %}
