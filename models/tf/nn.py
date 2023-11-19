@@ -1,7 +1,7 @@
-from models.model import Model
 import numpy as np
 import tensorflow as tf
-import tensorflow_addons as tfa
+
+from models.model import Model
 
 
 class FCNet(Model):
@@ -37,10 +37,8 @@ class FCNet(Model):
 
         if optimizer == "adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        elif optimizer == "yogi":
-            optimizer = tfa.optimizers.Yogi(learning_rate=learning_rate)
         elif optimizer == "adamw":
-            optimizer = tfa.optimizers.AdamW(
+            optimizer = tf.keras.optimizers.AdamW(
                 weight_decay=0.001, learning_rate=learning_rate
             )
         else:

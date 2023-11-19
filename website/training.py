@@ -131,7 +131,7 @@ class CustomTrainNNForm(CustomTrainForm):
             one_hot=True,
             random_seed=random_seed,
         )
-        self.optimizer.choices = ["adam", "adamw", "yogi"]
+        self.optimizer.choices = ["adam", "adamw"]
 
     def _validate_form(self) -> str:
         try:
@@ -363,9 +363,9 @@ class CustomTrainNNForm(CustomTrainForm):
             )
 
         optimizer = self.optimizer.data
-        if not (optimizer == "adam" or optimizer == "adamw" or optimizer == "yogi"):
+        if not (optimizer == "adam" or optimizer == "adamw"):
             return (
-                f"Expected optimizer to equal adam, or adamw or yogi, got {optimizer}"
+                f"Expected optimizer to equal adam, or adamw got {optimizer}"
             )
 
         return "valid"

@@ -1,6 +1,7 @@
+import pandas as pd
+
 from models.model import Model
 from models.tf.nn import FCNet
-import pandas as pd
 from tuners.tuner import Tuner
 
 
@@ -74,7 +75,7 @@ class FCNetTuner(Tuner):
             trial.suggest_float(f"dropout_{i}", low=0.0, high=0.4, step=0.1)
             for i in range(num_hidden_layers)
         ]
-        optimizer = trial.suggest_categorical(f"optimizer", ["adam", "yogi", "adamw"])
+        optimizer = trial.suggest_categorical(f"optimizer", ["adam", "adamw"])
         learning_rate = trial.suggest_float(
             f"learning_rate", low=0.0001, high=0.001, step=0.0001
         )
